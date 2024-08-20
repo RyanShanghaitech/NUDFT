@@ -95,7 +95,7 @@ class NudftClient:
                 break
         return bytesPkgRx
     
-    def nudft(self, lstX:ndarray, lstIx:ndarray, lstK:ndarray) -> ndarray:
+    def nudft(self, lstIx:ndarray, lstX:ndarray, lstK:ndarray) -> ndarray:
         assert(lstX.shape[0] == lstIx.shape[0]) # num of point consistency
         assert(lstX.shape[1] == lstK.shape[1]) # dim consistency
         lstPkgTx = self._packData(False, lstX, lstIx, lstK)
@@ -105,7 +105,7 @@ class NudftClient:
         lstSk = lstSk[0::2] + 1j*lstSk[1::2]
         return lstSk
     
-    def nuidft(self, lstK:ndarray, lstSk:ndarray, lstX:ndarray) -> ndarray:
+    def nuidft(self, lstSk:ndarray, lstK:ndarray, lstX:ndarray) -> ndarray:
         assert(lstK.shape[0] == lstSk.shape[0]) # num of point consistency
         assert(lstK.shape[1] == lstX.shape[1]) # dim consistency
         lstPkgTx = self._packData(True, lstK, lstSk, lstX)
