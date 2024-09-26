@@ -2,7 +2,18 @@ from numpy import *
 from socket import *
 
 class NudftClient:
-    def __init__(self, ipServer:str="127.0.0.1", portServer:int=7885) -> None:
+    def __init__(self) -> None:
+        with open("NudftServer.cfg", 'r') as file:
+            ipServer = None
+            portServer = None
+            for line in file:
+                if line.startswith("[ADDR]"):
+                    ipServer = line.split()[1]
+                elif line.startswith("[PORT]"):
+                    portServer = int(line.split()[1])
+        ipServer = "127.0.0.1" if ipServer is None else ipServer
+        portServer = 7885 if portServer is None else portServer
+
         self.objSocket = socket(AF_INET, SOCK_STREAM)
         try:
             self.objSocket.connect((ipServer, portServer))

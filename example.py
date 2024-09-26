@@ -7,7 +7,7 @@ import skimage.transform as transform
 from nudft import *
 
 sizImg = 128
-objClient = NudftClient(ipServer="127.0.0.1", portServer=7886)
+objClient = NudftClient()
 
 def cfft(img): return fft.fftshift(fft.fft2(fft.ifftshift(img)))
 def cifft(kspace): return fft.fftshift(fft.ifft2(fft.ifftshift(kspace)))
