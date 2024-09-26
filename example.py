@@ -7,7 +7,7 @@ import skimage.transform as transform
 from nudft import *
 
 sizImg = 128
-objClient = NudftClient()
+objClient = NudftClient(ipServer="127.0.0.1", portServer=7886)
 
 def cfft(img): return fft.fftshift(fft.fft2(fft.ifftshift(img)))
 def cifft(kspace): return fft.fftshift(fft.ifft2(fft.ifftshift(kspace)))
@@ -23,10 +23,10 @@ lstDs = loadtxt("./Resource/lstDs_Radial.txt") # load sampling density compensat
 lstXY = loadtxt("./Resource/trjCart.txt") # load sampling coordinates in image
 
 # generate list of input (kspace) data
-lstRawdata = objClient.nudft(lstXY, img.flatten(), lstKxKy)
+lstRawdata = objClient.nudft(img.flatten(), lstXY, lstKxKy)
 
 # run NUIDFT
-lstOutputData = objClient.nuidft(lstKxKy, lstRawdata*lstDs, lstXY)
+lstOutputData = objClient.nuidft(lstRawdata*lstDs, lstKxKy, lstXY)
 imgReco = lstOutputData.reshape([sizImg, sizImg])
 
 # show results

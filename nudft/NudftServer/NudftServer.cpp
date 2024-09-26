@@ -78,6 +78,7 @@ int NudftServer::getAddrPort(NudftServer::typeConfig* config)
     int rtFun = 0;
     if(getAddrPortFile(config)){
         getAddrPortDefault(config);
+        saveAddrPort(config);
     }
     return 0;
 }
@@ -348,9 +349,9 @@ int NudftServer::nudft(
         *ptrValDm1++ = tempDm1.real();
         *ptrValDm1++ = tempDm1.imag();
 
-        if(idxThread == 0 && idxDm1%100 == 0){
-            printf("[INFO] thread[%d]: progress = %.2f%%\n", (int)idxThread, 100*(double)idxDm1/lenDm1);
-        }
+        // if(idxThread == 0 && idxDm1%100 == 0){
+        //     printf("[INFO] thread[%d]: progress = %.2f%%\n", (int)idxThread, 100*(double)idxDm1/lenDm1);
+        // }
     }
 
     return 0;

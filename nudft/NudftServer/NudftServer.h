@@ -64,7 +64,7 @@ public:
     NudftServer(QObject *parent = nullptr);
     ~NudftServer();
 private:
-#define FILE_CFG ("../config/config.ini")
+#define FILE_CFG ("NudftServer.cfg")
 #define ADDR_SERVER_DEFAULT ("127.0.0.1")
 #define PORT_SERVER_DEFAULT (7885)
     typedef struct{
