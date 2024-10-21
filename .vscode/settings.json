@@ -1,0 +1,6 @@
+{
+    "C_Cpp.default.includePath": [
+        "/home/ryan/anaconda3/envs/default/include/python3.12/",
+        "/home/ryan/anaconda3/envs/default/lib/python3.12/site-packages/numpy/core/include"
+    ]
+}
