@@ -100,26 +100,26 @@ static PyObject *
 dft(PyObject *self, PyObject *args)
 {
     bool bRet;
-    PyArrayObject *poDataSrc, *poCoorSrc, *poCoorDst;
+    PyArrayObject *pyaDataSrc, *pyaCoorSrc, *pyaCoorDst;
     PyLongObject *poInv;
-    bRet = PyArg_ParseTuple(args, "O!O!O!O!", &PyArray_Type, &poDataSrc, &PyArray_Type, &poCoorSrc, &PyArray_Type, &poCoorDst, &PyLong_Type, &poInv);
+    bRet = PyArg_ParseTuple(args, "O!O!O!O!", &PyArray_Type, &pyaDataSrc, &PyArray_Type, &pyaCoorSrc, &PyArray_Type, &pyaCoorDst, &PyLong_Type, &poInv);
     if (!bRet) return nullptr;
 
     // convert to expected type and arangement
     // it's very important to ensure C_CONTIGUOUS because some stupid asshole don't care the order consistency
-    poDataSrc = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)poDataSrc, NPY_COMPLEX128, NPY_ARRAY_C_CONTIGUOUS);
-    poCoorSrc = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)poCoorSrc, NPY_FLOAT64, NPY_ARRAY_C_CONTIGUOUS);
-    poCoorDst = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)poCoorDst, NPY_FLOAT64, NPY_ARRAY_C_CONTIGUOUS);
+    pyaDataSrc = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)pyaDataSrc, NPY_COMPLEX128, NPY_ARRAY_C_CONTIGUOUS);
+    pyaCoorSrc = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)pyaCoorSrc, NPY_FLOAT64, NPY_ARRAY_C_CONTIGUOUS);
+    pyaCoorDst = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)pyaCoorDst, NPY_FLOAT64, NPY_ARRAY_C_CONTIGUOUS);
     
     // derive shape
     volatile int iNdimDataSrc, iNdimCoorSrc, iNdimCoorDst;
     volatile npy_intp *plDimDataSrc, *plDimCoorSrc, *plDimCoorDst;
-    iNdimDataSrc = PyArray_NDIM(poDataSrc);
-    iNdimCoorSrc = PyArray_NDIM(poCoorSrc);
-    iNdimCoorDst = PyArray_NDIM(poCoorDst);
-    plDimDataSrc = PyArray_SHAPE(poDataSrc);
-    plDimCoorSrc = PyArray_SHAPE(poCoorSrc);
-    plDimCoorDst = PyArray_SHAPE(poCoorDst);
+    iNdimDataSrc = PyArray_NDIM(pyaDataSrc);
+    iNdimCoorSrc = PyArray_NDIM(pyaCoorSrc);
+    iNdimCoorDst = PyArray_NDIM(pyaCoorDst);
+    plDimDataSrc = PyArray_SHAPE(pyaDataSrc);
+    plDimCoorSrc = PyArray_SHAPE(pyaCoorSrc);
+    plDimCoorDst = PyArray_SHAPE(pyaCoorDst);
 
     // check shape
     if (iNdimDataSrc != 1)
@@ -157,9 +157,9 @@ dft(PyObject *self, PyObject *args)
     // get data ptr
     complex *pcDataSrc;
     double *pdCoorSrc, *pdCoorDst;
-    pcDataSrc = (complex*)PyArray_GETPTR1(poDataSrc, 0);
-    pdCoorSrc = (double*)PyArray_GETPTR2(poCoorSrc, 0, 0);
-    pdCoorDst = (double*)PyArray_GETPTR2(poCoorDst, 0, 0);
+    pcDataSrc = (complex*)PyArray_GETPTR1(pyaDataSrc, 0);
+    pdCoorSrc = (double*)PyArray_GETPTR2(pyaCoorSrc, 0, 0);
+    pdCoorDst = (double*)PyArray_GETPTR2(pyaCoorDst, 0, 0);
 
     complex *pcDataDst = new complex[iNptDst];
 
@@ -182,33 +182,33 @@ dft(PyObject *self, PyObject *args)
     }
 
     npy_intp pDims[1] = {iNptDst};
-    PyArrayObject *poDataDst = (PyArrayObject*)PyArray_SimpleNewFromData(1, pDims, NPY_COMPLEX128, (void*)pcDataDst);
-    PyArray_ENABLEFLAGS(poDataDst, NPY_ARRAY_OWNDATA);
-    return PyArray_Return(poDataDst);
+    PyArrayObject *pyaDataDst = (PyArrayObject*)PyArray_SimpleNewFromData(1, pDims, NPY_COMPLEX128, (void*)pcDataDst);
+    PyArray_ENABLEFLAGS(pyaDataDst, NPY_ARRAY_OWNDATA);
+    return PyArray_Return(pyaDataDst);
 }
 
 static PyObject *
 ifft(PyObject *self, PyObject *args)
 {
     bool bRet;
-    PyArrayObject *poDataSrc, *poCoorSrc, *poDimDst;
-    bRet = PyArg_ParseTuple(args, "O!O!O!", &PyArray_Type, &poDataSrc, &PyArray_Type, &poCoorSrc, &PyArray_Type, &poDimDst);
+    PyArrayObject *pyaDataSrc, *pyaCoorSrc, *pyaDimDst;
+    bRet = PyArg_ParseTuple(args, "O!O!O!", &PyArray_Type, &pyaDataSrc, &PyArray_Type, &pyaCoorSrc, &PyArray_Type, &pyaDimDst);
     if (!bRet) return nullptr;
 
     // ensure the dtype and arrangement
-    poDataSrc = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)poDataSrc, NPY_COMPLEX128, NPY_ARRAY_C_CONTIGUOUS);
-    poCoorSrc = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)poCoorSrc, NPY_FLOAT64, NPY_ARRAY_C_CONTIGUOUS);
-    poDimDst = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)poDimDst, NPY_INT64, NPY_ARRAY_C_CONTIGUOUS);
+    pyaDataSrc = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)pyaDataSrc, NPY_COMPLEX128, NPY_ARRAY_C_CONTIGUOUS);
+    pyaCoorSrc = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)pyaCoorSrc, NPY_FLOAT64, NPY_ARRAY_C_CONTIGUOUS);
+    pyaDimDst = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)pyaDimDst, NPY_INT64, NPY_ARRAY_C_CONTIGUOUS);
 
     // derive shape
     volatile int iNdimDataSrc, iNdimCoorSrc, iNdimDimDst;
     volatile npy_intp *plDimDataSrc, *plDimCoorSrc, *plDimDimDst;
-    iNdimDataSrc = PyArray_NDIM(poDataSrc);
-    iNdimCoorSrc = PyArray_NDIM(poCoorSrc);
-    iNdimDimDst = PyArray_NDIM(poDimDst);
-    plDimDataSrc = PyArray_SHAPE(poDataSrc);
-    plDimCoorSrc = PyArray_SHAPE(poCoorSrc);
-    plDimDimDst = PyArray_SHAPE(poDimDst);
+    iNdimDataSrc = PyArray_NDIM(pyaDataSrc);
+    iNdimCoorSrc = PyArray_NDIM(pyaCoorSrc);
+    iNdimDimDst = PyArray_NDIM(pyaDimDst);
+    plDimDataSrc = PyArray_SHAPE(pyaDataSrc);
+    plDimCoorSrc = PyArray_SHAPE(pyaCoorSrc);
+    plDimDimDst = PyArray_SHAPE(pyaDimDst);
 
     // check shape
     if (iNdimDataSrc != 1)
@@ -246,9 +246,9 @@ ifft(PyObject *self, PyObject *args)
     complex *pcDataSrc;
     double *pdCoorSrc;
     long *plDimDst;
-    pcDataSrc = (complex*)PyArray_GETPTR1(poDataSrc, 0);
-    pdCoorSrc = (double*)PyArray_GETPTR2(poCoorSrc, 0, 0);
-    plDimDst = (long*)PyArray_GETPTR1(poDimDst, 0);
+    pcDataSrc = (complex*)PyArray_GETPTR1(pyaDataSrc, 0);
+    pdCoorSrc = (double*)PyArray_GETPTR2(pyaCoorSrc, 0, 0);
+    plDimDst = (long*)PyArray_GETPTR1(pyaDimDst, 0);
 
     int iNptDst = 1;
     for (int iIdxDim = 0; iIdxDim < iNdim; ++iIdxDim) iNptDst *= plDimDst[iIdxDim];
@@ -422,10 +422,10 @@ ifft(PyObject *self, PyObject *args)
     fftw_destroy_plan(plan);
 
     // create PyArray for return
-    PyArrayObject *poDataDst = (PyArrayObject*)PyArray_SimpleNewFromData(iNdim, plDimDst, NPY_COMPLEX128, (void*)pcDataDst);
-    PyArray_ENABLEFLAGS(poDataDst, NPY_ARRAY_OWNDATA);
+    PyArrayObject *pyaDataDst = (PyArrayObject*)PyArray_SimpleNewFromData(iNdim, plDimDst, NPY_COMPLEX128, (void*)pcDataDst);
+    PyArray_ENABLEFLAGS(pyaDataDst, NPY_ARRAY_OWNDATA);
 
-    return PyArray_Return(poDataDst);
+    return PyArray_Return(pyaDataDst);
 }
 
 static PyMethodDef aMeth[] = {
