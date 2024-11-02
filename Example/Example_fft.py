@@ -15,17 +15,7 @@ ksp = fftshift(fftn(fftshift(img)))/(numPix**3)
 arrK = array(meshgrid(
     *(linspace(-0.5, 0.5, numPix, endpoint=False) for _ in range(ndim)),
     indexing='ij')).reshape(ndim,-1).T
-_img = nufft.fft(ksp.flatten(), arrK, array((numPix,numPix,numPix)))
-print(f"img.shape = {_img.shape}")
-print(f"{abs(_img).flatten().max()}")
-
-figure()
-subplot(131)
-imshow(abs(ksp[kz,:,:]), cmap='gray')
-subplot(132)
-imshow(abs(ksp[:,ky,:]), cmap='gray')
-subplot(133)
-imshow(abs(ksp[:,:,kx]), cmap='gray')
+_img = nufft.ifft(ksp.flatten(), arrK, array((numPix,numPix,numPix)))
 
 figure()
 subplot(231)

@@ -183,11 +183,12 @@ dft(PyObject *self, PyObject *args)
 
     npy_intp pDims[1] = {iNptDst};
     PyArrayObject *poDataDst = (PyArrayObject*)PyArray_SimpleNewFromData(1, pDims, NPY_COMPLEX128, (void*)pcDataDst);
+    PyArray_ENABLEFLAGS(poDataDst, NPY_ARRAY_OWNDATA);
     return PyArray_Return(poDataDst);
 }
 
 static PyObject *
-fft(PyObject *self, PyObject *args)
+ifft(PyObject *self, PyObject *args)
 {
     bool bRet;
     PyArrayObject *poDataSrc, *poCoorSrc, *poDimDst;
@@ -422,27 +423,28 @@ fft(PyObject *self, PyObject *args)
 
     // create PyArray for return
     PyArrayObject *poDataDst = (PyArrayObject*)PyArray_SimpleNewFromData(iNdim, plDimDst, NPY_COMPLEX128, (void*)pcDataDst);
+    PyArray_ENABLEFLAGS(poDataDst, NPY_ARRAY_OWNDATA);
 
     return PyArray_Return(poDataDst);
 }
 
-static PyMethodDef pMetNufft[] = {
-    {"dft", dft, METH_VARARGS, "dft"},
-    {"fft", fft, METH_VARARGS, "fft"},
+static PyMethodDef aMeth[] = {
+    {"_dft", dft, METH_VARARGS, ""},
+    {"_ifft", ifft, METH_VARARGS, ""},
     {NULL, NULL, 0, NULL}
 };
 
-static struct PyModuleDef sModNufft = {
+static struct PyModuleDef sMod = {
     PyModuleDef_HEAD_INIT,
-    "nufft",
+    "ext",
     NULL,
     -1,
-    pMetNufft
+    aMeth
 };
 
 PyMODINIT_FUNC
-PyInit_nufft(void)
+PyInit_ext(void)
 {
     import_array();
-    return PyModule_Create(&sModNufft);
+    return PyModule_Create(&sMod);
 }

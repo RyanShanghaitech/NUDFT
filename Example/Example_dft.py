@@ -21,7 +21,7 @@ lstCart_05 = array(meshgrid(
 print(lstCart_Np.shape)
 print(lstCart_05.shape)
 
-ksp = nufft.dft(img.flatten(), lstCart_Np, lstCart_05, 0)
+ksp = nufft.dft(img.flatten(), lstCart_Np, lstCart_05)
 
 ksp = ksp.reshape(*(numPix for _ in range(ndim)))
 _img = fftshift(ifftn(fftshift(ksp)))
