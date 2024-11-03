@@ -5,17 +5,17 @@ from matplotlib.pyplot import *
 from skimage import data, transform
 
 numPix = 128
-ndim = 3
+numDim = 3
 kz=numPix//2; ky=numPix//2; kx=numPix//2
 
-img = transform.resize(data.shepp_logan_phantom(), (numPix,numPix)).astype(complex128)
-if ndim == 3: img = tile(img[newaxis,:,:], (numPix,1,1))
+img = transform.resize(data.shepp_logan_phantom(), [numPix for _ in range(numDim)]).astype(complex128)
+if numDim == 3: img = tile(img[newaxis,:,:], (numPix,1,1))
 
-ksp = fftshift(fftn(fftshift(img)))/(numPix**3)
+ksp = fftshift(fftn(fftshift(img)))/(numPix**numDim)
 arrK = array(meshgrid(
-    *(linspace(-0.5, 0.5, numPix, endpoint=False) for _ in range(ndim)),
-    indexing='ij')).reshape(ndim,-1).T
-_img = nufft.ifft(ksp.flatten(), arrK, array((numPix,numPix,numPix)))
+    *(linspace(-0.5, 0.5, numPix, endpoint=False) for _ in range(numDim)),
+    indexing='ij')).reshape(numDim,-1).T
+_img = nufft.ifft(ksp.flatten(), arrK, array([numPix for _ in range(numDim)])).reshape([numPix for _ in range(numDim)])
 
 figure()
 subplot(231)

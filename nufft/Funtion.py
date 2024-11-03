@@ -7,5 +7,5 @@ def dft(arrSrc:ndarray, arrCoorSrc:ndarray, arrCoorDst:ndarray) -> ndarray:
 def idft(arrSrc:ndarray, arrCoorSrc:ndarray, arrCoorDst:ndarray) -> ndarray:
     return _dft(arrSrc, arrCoorSrc, arrCoorDst, 1)
 
-def ifft(arrSrc:ndarray, arrCoorSrc:ndarray, arrCoorDst:ndarray) -> ndarray:
-    return _ifft(arrSrc, arrCoorSrc, arrCoorDst)
+def ifft(arrSrc:ndarray, arrCoorSrc:ndarray, arrDimDst:ndarray) -> ndarray:
+    return _ifft(arrSrc, arrCoorSrc, arrDimDst)
