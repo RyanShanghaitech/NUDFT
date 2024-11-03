@@ -166,18 +166,20 @@ dft(PyObject *self, PyObject *args)
     // dft loop
     int iInv = PyLong_AsLong((PyObject*)poInv);
     double dSign = iInv ? +1e0 : -1e0;
+    double dAng = 0;
     #pragma omp parallel for
     for (int iIdxDst = 0; iIdxDst < iNptDst; ++iIdxDst)
     {
         pcDataDst[iIdxDst] = 0;
         for (int iIdxSrc = 0; iIdxSrc < iNptSrc; ++iIdxSrc)
         {
-            double dKX = 0;
+            dAng = 0;
             for (int iIdxAx = 0; iIdxAx < iNdim; ++iIdxAx)
             {
-                dKX += pdCoorSrc[iIdxSrc*iNdim+iIdxAx] * pdCoorDst[iIdxDst*iNdim+iIdxAx];
+                dAng += pdCoorSrc[iIdxSrc*iNdim+iIdxAx] * pdCoorDst[iIdxDst*iNdim+iIdxAx];
             }
-            pcDataDst[iIdxDst] += pcDataSrc[iIdxSrc] * std::exp(complex(0,dSign*2e0*M_PI*dKX));
+            dAng *= dSign*2e0*M_PI;
+            pcDataDst[iIdxDst] += pcDataSrc[iIdxSrc] * complex(std::cos(dAng), std::sin(dAng)); // std::exp(complex(0,dSign*2e0*M_PI*dAng));
         }
     }
 

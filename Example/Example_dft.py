@@ -3,6 +3,7 @@ from numpy import *
 from numpy.fft import *
 from matplotlib.pyplot import *
 from skimage import data, transform
+import time
 
 numPix = 32
 numDim = 3
@@ -18,10 +19,10 @@ lstCart_05 = array(meshgrid(
     *(linspace(-0.5, 0.5, numPix, endpoint=False) for _ in range(numDim)),
     indexing='ij')).reshape(numDim,-1).T
 
-print(lstCart_Np.shape)
-print(lstCart_05.shape)
-
+time0 = time.time()
 ksp = nufft.dft(img.flatten(), lstCart_Np, lstCart_05)
+time1 = time.time()
+print(f"elapsed time: {time1-time0:.3f} s")
 
 ksp = ksp.reshape(*(numPix for _ in range(numDim)))
 _img = fftshift(ifftn(fftshift(ksp)))
