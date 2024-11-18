@@ -1,1 +1,0 @@
-from .Funtion import dft, idft, ifft
