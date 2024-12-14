@@ -35,16 +35,18 @@ dft(PyObject *self, PyObject *args)
     pyaCoorDst = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)pyaCoorDst, NPY_FLOAT64, NPY_ARRAY_C_CONTIGUOUS);
     
     // derive shape
+    npy_intp *plDimDataSrc = PyArray_SHAPE(pyaDataSrc);
     npy_intp *plDimCoorSrc = PyArray_SHAPE(pyaCoorSrc);
     npy_intp *plDimCoorDst = PyArray_SHAPE(pyaCoorDst);
 
     // derive Npt of input, output and Nax
+    int iNframe = plDimDataSrc[0];
     int iNptSrc = plDimCoorSrc[0];
     int iNptDst = plDimCoorDst[0];
     int iNdim = plDimCoorSrc[1];
 
     // get data ptr
-    complex *pcDataSrc = (complex*)PyArray_GETPTR1(pyaDataSrc, 0);
+    complex *pcDataSrc = (complex*)PyArray_GETPTR2(pyaDataSrc, 0, 0);
     double *pdCoorSrc = (double*)PyArray_GETPTR2(pyaCoorSrc, 0, 0);
     double *pdCoorDst = (double*)PyArray_GETPTR2(pyaCoorDst, 0, 0);
 
@@ -54,6 +56,7 @@ dft(PyObject *self, PyObject *args)
     int iInv = PyLong_AsLong((PyObject*)poInv);
     double dSign = iInv ? +1e0 : -1e0;
     double dAng = 0;
+    int iIdxSrcBias = 0;
     #pragma omp parallel for
     for (int iIdxDst = 0; iIdxDst < iNptDst; ++iIdxDst)
     {
@@ -66,13 +69,18 @@ dft(PyObject *self, PyObject *args)
                 dAng += pdCoorSrc[iIdxSrc*iNdim+iIdxAx] * pdCoorDst[iIdxDst*iNdim+iIdxAx];
             }
             dAng *= dSign*2e0*M_PI;
-            pcDataDst[iIdxDst] += pcDataSrc[iIdxSrc] * complex(std::cos(dAng), std::sin(dAng)); // std::exp(complex(0,dSign*2e0*M_PI*dAng));
+            iIdxSrcBias = iNframe==1 ? 0 : iIdxDst*iNptSrc;
+            pcDataDst[iIdxDst] += pcDataSrc[iIdxSrcBias + iIdxSrc] * complex(std::cos(dAng), std::sin(dAng)); // std::exp(complex(0,dSign*2e0*M_PI*dAng));
         }
     }
 
     npy_intp pDims[1] = {iNptDst};
     PyArrayObject *pyaDataDst = (PyArrayObject*)PyArray_SimpleNewFromData(1, pDims, NPY_COMPLEX128, (void*)pcDataDst);
     PyArray_ENABLEFLAGS(pyaDataDst, NPY_ARRAY_OWNDATA);
+
+    Py_XDECREF(pyaDataSrc);
+    Py_XDECREF(pyaCoorSrc);
+    Py_XDECREF(pyaCoorDst);
     return PyArray_Return(pyaDataDst);
 }
 
